@@ -1,0 +1,1 @@
+Attention à bien définir dans "init.php" le chemin vers votre dossier racine via les constantes URL et RACINE. Si le nom de votre base de donnée a changé, veuillez aussi le changer dans la variable $dsn. Enfin, n'oubliez pas que sur mac, le mot de passe conservé dans $pwd n'est pas vide, il faudra y placer la valeur "root".

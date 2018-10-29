@@ -1,0 +1,65 @@
+Etapes pour créer mon Eshop.com
+
+#1 Designer notre BDD (papier, workbench ...)
+
+#2 Créer la BDD (PHPMYADMIN, shell ...)
+
+#3 Créer l'architecture dossiers/fichiers (2 sites en un: FRONT + BACK)
+
+    > Eshop
+
+        > ADMIN
+
+            > CSS
+
+            > JS
+
+            index.php
+            formulaire_produit.php
+
+        > INC
+            init.php
+            header.php
+            footer.php
+            fonction.php
+
+        > ASSETS
+            > UPLOADS
+                > USER
+                > ADMIN
+            > IMG
+
+        > CSS
+
+        > JS
+
+        index.php
+        inscription.php
+        connexion.php
+        profil.php
+
+#4 Connexion avec la BDD (init.php) + j'ouvre la session + je déclare mes premières fonctions/variables utiles
+
+#5 s'occuper de l'index.php : s'occuper du front + découper le contenu en header/footer + function.php
+
+#6 Développer la page inscription.php >> formulaire + sécurité + INSERT en BDD
+
+#7 Développer la page connexion.php >> formulaire + sécurité + SELECT + SESSION
+
+#8 Développer la page profil.php : affichage des infos
+
+#9 Option de déconnexion
+
+#10 Création de fonctions pour vérifier que l'utilisateur est connecté + fonction si l'utilisateur est Admin >> rendre dynamique le header et interdire l'accès aux page si non connecté
+
+#11 BACKOFFICE : développer le dossier ADMIN 
+    > l'aspect FRONT avec menu dynamique
+    > Avoir la liste des produits
+    > Ajouter un produit
+    > Modifier/Supprimer un produit
+
+#12 Afficher les produits pour l'utilisateur + recherche par catégories + produit cliquable (page de présentation pour le produit)
+
+#13 S'occuper de la page produit
+
+#14 Mettre en place un panier
