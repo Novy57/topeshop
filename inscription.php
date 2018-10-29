@@ -96,18 +96,18 @@
                 }
             }
             
-            // Si pseudo dispo ou si modif profil
+            // Si pseudo dispo ou si modif profil sans changement pseudo
             if(empty($msg)) 
             {
 
                 if(!empty($_POST['id_membre'])) # Je suis en train de modifier un profil
                 {
-                    $result = $pdo->prepare("UPDATE membre SET pseudo=:pseudo, mdp=:mdp, nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse WHERE id_membre = :id_membre");
+                    $result = $pdo->prepare("UPDATE membre SET pseudo=:pseudo, mdp=:mdp, nom=:nom, prenom=:prenom, photo=:photo, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse WHERE id_membre = :id_membre");
                     $result->bindValue(":id_membre", $_POST['id_membre'], PDO::PARAM_INT);
                 }
                 else # Je suis en train d'enregistrer pour la première fois un profil
                 {
-                    $result = $pdo->prepare("INSERT INTO membre (pseudo, mdp, nom, prenom, email, civilite, ville, code_postal, adresse, statut) VALUES (:pseudo, :mdp, :nom, :prenom, :email, :civilite, :ville, :code_postal, :adresse, 0)");
+                    $result = $pdo->prepare("INSERT INTO membre (pseudo, mdp, nom, prenom, photo, email, civilite, ville, code_postal, adresse, statut) VALUES (:pseudo, :mdp, :nom, :prenom, :photo, :email, :civilite, :ville, :code_postal, :adresse, 0)");
                 }
 
                 $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT); 
@@ -122,6 +122,7 @@
                 $result->bindValue(':ville', $_POST['ville'], PDO::PARAM_STR);
                 $result->bindValue(':adresse', $_POST['adresse'], PDO::PARAM_STR);
                 $result->bindValue(':code_postal', $_POST['code_postal'], PDO::PARAM_INT);
+                $result->bindValue(':photo', "default.png", PDO::PARAM_STR);
 
                 if($result->execute())
                 {
