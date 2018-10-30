@@ -190,7 +190,7 @@
             </tr>
         </table>
         <?php if(userConnect()) : ?>
-            <?php if ( empty($_SESSION['user']['ville']) || empty($_SESSION['user']['code_postal']) || empty($_SESSION['user']['adresse']) ) : ?>
+            <?php if ( empty($_SESSION['user']['ville']) || ($_SESSION['user']['code_postal'] == 0) || empty($_SESSION['user']['adresse']) ) : ?>
                 <p>Veuillez compléter vos coordonnées dans votre profil. (adresse / ville / code postal)</p>
                 <a class="btn btn-success" href="inscription.php?id=<?= $_SESSION['user']['id_membre'] ?>">Modifier votre profil</a>
             <?php else : ?>
