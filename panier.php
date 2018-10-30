@@ -84,7 +84,7 @@
     
             // enregistrer dans la table detail_commande les details pour chaque produit commandé
             foreach ($_SESSION['panier'] as $key => $value) {
-                extract($value);
+                extract($valeur);
     
                 $resultat = $pdo -> exec("INSERT INTO detail_commande (id_commande, id_produit, quantite, prix) VALUES ($id_commande, $key, $quantite, $prix)");
     
