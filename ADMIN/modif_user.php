@@ -39,14 +39,14 @@
             }
             else 
             {
-                $result = $pdo->prepare("UPDATE membre SET pseudo=:pseudo, nom=:nom, prenom=:prenom, mail=:mail, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse, statut=:statut WHERE id_membre = :id");
+                $result = $pdo->prepare("UPDATE membre SET pseudo=:pseudo, nom=:nom, prenom=:prenom, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse, statut=:statut WHERE id_membre = :id");
 
                 $result->bindValue(":id", $_POST['id_membre'], PDO::PARAM_INT);
 
                 $result->bindValue(':pseudo', $_POST['pseudo'], PDO::PARAM_STR);
                 $result->bindValue(':nom', $_POST['nom'], PDO::PARAM_STR);
                 $result->bindValue(':prenom', $_POST['prenom'], PDO::PARAM_STR);
-                $result->bindValue(':mail', $_POST['mail'], PDO::PARAM_STR);
+                $result->bindValue(':email', $_POST['email'], PDO::PARAM_STR);
                 $result->bindValue(':civilite', $_POST['civilite'], PDO::PARAM_STR);
                 $result->bindValue(':ville', $_POST['ville'], PDO::PARAM_STR);
                 $result->bindValue(':adresse', $_POST['adresse'], PDO::PARAM_STR);
@@ -70,7 +70,7 @@
 
 if(isset($user['pseudo'])){$pseudo = $user['pseudo']; } elseif(isset($_POST['pseudo'])) {$pseudo=$_POST['pseudo'];} else {$pseudo = "";}
 if(isset($user['nom'])){$nom = $user['nom']; } elseif(isset($_POST['nom'])) {$nom=$_POST['nom'];} else {$nom = "";}
-if(isset($user['mail'])){$mail = $user['mail']; } elseif(isset($_POST['mail'])) {$mail=$_POST['mail'];} else {$mail = "";}
+if(isset($user['email'])){$email = $user['email']; } elseif(isset($_POST['email'])) {$email=$_POST['email'];} else {$email = "";}
 if(isset($user['prenom'])){$prenom = $user['prenom']; } elseif(isset($_POST['prenom'])) {$prenom=$_POST['prenom'];} else {$prenom = "";}
 if(isset($user['id_membre'])){$id_membre = $user['id_membre']; } elseif(isset($_POST['id_membre'])) {$id_membre=$_POST['id_membre'];} else {$id_membre = "";}
 if(isset($user['civilite'])){$civilite = $user['civilite']; } elseif(isset($_POST['civilite'])) {$civilite=$_POST['civilite'];} else {$civilite = "";}
@@ -102,7 +102,7 @@ if(isset($user['statut'])){$statut = $user['statut']; } elseif(isset($_POST['sta
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" placeholder="Entrez votre email ..." name="mail" value="<?= $mail ?>">
+                <input type="email" class="form-control" id="email" placeholder="Entrez votre email ..." name="email" value="<?= $email ?>">
             </div>
             <div class="form-group">
                 <label for="civilite">Civilité</label>

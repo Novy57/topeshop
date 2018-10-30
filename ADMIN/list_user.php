@@ -117,7 +117,7 @@ foreach ($membre as $key => $value) {
             $contenu .= "<td><a data-toggle='modal' data-target='#deleteModal" . $membre['id_membre'] . "'><i class='fas fa-trash-alt'></i></a></td>";
     
             # J'appelle ma modal de supression (fonction créée dans fonction.php)
-            deleteModal($membre['id_membre'], $membre['pseudo'], "l'utilisateur");
+            deleteModalUser($membre['id_membre'], $membre['pseudo'], "l'utilisateur");
     
             $contenu .= "</tr>";
         }
