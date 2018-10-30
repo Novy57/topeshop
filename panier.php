@@ -33,6 +33,7 @@
     if($_POST)
     {
 
+        # Ajout panier et modif quantité
         if(isset($_POST["ajoutPanier"]))
         {
             $result = $pdo->prepare("SELECT * FROM produit WHERE id_produit = :id_produit");
@@ -44,9 +45,16 @@
             // debug($produit);
     
             # Appel à ma fonction pour créer mon panier
-            ajoutPanier($produit['id_produit'], $_POST['quantite'], $produit['photo'], $produit['titre'], $produit['prix']);
-    
-            $msg .= "<div class='alert alert-success'>Le produit a bien été ajouté au panier !</div>";
+            ajoutPanier($produit['id_produit'], $_POST['quantite'], $produit['photo'], $produit['titre'], $produit['prix'], $produit['stock']);
+
+            # Modif quantité
+            if ($_POST["ajoutPanier"] == "modif quantité"){
+                $msg .= "<div class='alert alert-success'>La quantité de produit " . $produit['titre'] . " a bien été modifiée !</div>";
+            }
+            # ou ajout au panier
+            else{
+                $msg .= "<div class='alert alert-success'>Le produit a bien été ajouté au panier !</div>";
+            }
         }
 
         foreach($_SESSION['panier'] as $indice => $valeur) 
@@ -96,9 +104,6 @@
             unset($_SESSION['panier']); //suppression du panier dans la session utilisateur
         }
     }
-
-    // debug($_SESSION);
-
 ?>
 
     <div class="starter-template">
@@ -118,6 +123,8 @@
                     <th scope="col">Prix Unitaire</th>
                     <th scope="col">Quantité</th>
                     <th scope="col">Prix Total</th>
+                    <th scope="col">Ajouter</th>
+                    <th scope="col">Retirer</th>
                     <th scope="col">Supprimer</th>
                 </tr>
             </thead>
@@ -134,23 +141,63 @@
                         <td><?= $value['quantite'] ?></td>
 
                         <td><?= $value['quantite']*$value['prix'] ?> €</td>
-                        
+
+                        <td>         
+                            <?php if ($value['stock']-$value['quantite'] > 0) : ?>
+                                <form action="" method="post">
+                                    <input type="hidden" name="id_produit" value="<?= $key ?>">
+                                    <select class="form-control" name="quantite">
+                                        <option selected disabled>Quantité ...</option>
+                                        <?php for($i=1; $i <= $value['stock']-$value['quantite'] ; $i++) : ?>
+                                            <option><?=$i?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                    <input type="submit" class="btn btn-success btn-block" value="modif quantité" name="ajoutPanier">
+                                </form>
+                            <?php else : ?>
+                                Quantité au max, il n'y a pas plus de stock
+                            <?php endif ?>
+                        </td>
+
+                        <td>         
+                            <?php if ($value['quantite'] > 0) : ?>
+                                <form action="" method="post">
+                                    <input type="hidden" name="id_produit" value="<?= $key ?>">
+                                    <select class="form-control" name="quantite">
+                                        <option selected disabled>Quantité ...</option>
+                                        <?php for($i=1; $i <= $value['quantite'] ; $i++) : ?>
+                                            <option><?=-$i?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                    <input type="submit" class="btn btn-success btn-block" value="modif quantité" name="ajoutPanier">
+                                </form>
+                            <?php else : ?>
+                                La quantité est à 0, supprimer le produit ou ajouter une quantité
+                            <?php endif ?>
+                        </td>
+
                         <td><a href="?a=delete&id=<?=$key?>"><i class='fas fa-trash-alt'></i></a></td>
                     </tr>
                 </tbody>
             <?php endforeach; ?>
             <tr>
                 <th colspan="5">Montant total</th>
-                <td><?= number_format(prixTotal(), 2, ',', '.') # la fonction number_format() nous permet de retourner un montant formaté à notre convenance. Elle accepte 1 à 4 paramètres : le nombre visé + définition du nombre de décimales + le séparateur du point décimal + déparateur des milliers ?> €</td> 
+                <td><?= number_format(prixTotal("HT"), 2, ',', '.') # la fonction number_format() nous permet de retourner un montant formaté à notre convenance. Elle accepte 1 à 4 paramètres : le nombre visé + définition du nombre de décimales + le séparateur du point décimal + déparateur des milliers ?> € HT</td> 
+                <td><?= number_format(prixTotal("TTC"), 2, ',', '.') ?> € TTC</td> 
             </tr>
             <tr>
                 <td><a href="?a=truncate"><em>vider le panier</em></a></td>
             </tr>
         </table>
         <?php if(userConnect()) : ?>
-            <form action="" method="post">
-                <input type="submit" class="btn btn-primary" value="Valider le panier" name=valider>
-            </form>
+            <?php if ( empty($_SESSION['user']['ville']) || ($_SESSION['user']['code_postal'] == 0) || empty($_SESSION['user']['adresse']) ) : ?>
+                <p>Veuillez compléter vos coordonnées dans votre profil. (adresse / ville / code postal)</p>
+                <a class="btn btn-success" href="inscription.php?id=<?= $_SESSION['user']['id_membre'] ?>">Modifier votre profil</a>
+            <?php else : ?>
+                <form action="" method="post">
+                    <input type="submit" class="btn btn-primary" value="Valider le panier" name=valider>
+                </form>
+            <?php endif; ?>
         <?php else : ?>
             <p>Vous n'êtes pas connecté.</p>
             <a class="btn btn-success" href="connexion.php">Se connecter</a>

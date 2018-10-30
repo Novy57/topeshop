@@ -111,7 +111,7 @@
             $contenu .= "<td><a data-toggle='modal' data-target='#deleteModal" . $produit['id_produit'] . "'><i class='fas fa-trash-alt'></i></a></td>";
     
             # J'appelle ma modal de supression (fonction créée dans fonction.php)
-            deleteModal($produit['id_produit'], $produit['titre'], $produit['reference']);
+            deleteModal($produit['id_produit'], $produit['titre'], $produit['reference'], "produit");
     
             $contenu .= "</tr>";
         }

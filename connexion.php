@@ -6,9 +6,11 @@
 
     require_once("inc/header.php");
 
-    if(isset($_GET['m']) && $_GET['m'] == "success")
-    {
-        $msg .= "<div class='alert alert-success'>Vous êtes bien inscrit. Veuillez désormais vous connecter.</div>";
+    if(isset($_GET['m']))
+    {  if ($_GET['m'] == "success")
+            $msg .= "<div class='alert alert-success'>Vous êtes bien inscrit. Veuillez désormais vous connecter.</div>";
+        else if ($_GET['m'] == "modified")
+            $msg .= "<div class='alert alert-success'>Votre profil a bien été modifié. Veuillez désormais vous connecter.</div>";
     }
 
     // debug($_POST);

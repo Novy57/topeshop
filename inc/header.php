@@ -49,6 +49,8 @@
               <?php else : ?>
                 <a class="dropdown-item" href="profil.php">Mon profil</a>
                 <a class="dropdown-item" href="deconnexion.php">Déconnexion</a>
+                <a class="dropdown-item" href="inscription.php?id=<?= $_SESSION['user']['id_membre'] ?>">Modifier mon profil</a>
+                <a class="dropdown-item" href="mes_commandes.php?id=<?= $_SESSION['user']['id_membre'] ?>">Mes commandes</a>
               <?php endif; ?>
 
             </div>
