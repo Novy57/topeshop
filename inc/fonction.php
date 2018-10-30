@@ -94,7 +94,7 @@ function ajoutPanier($id, $quantite, $photo, $titre, $prix, $stock)
         $_SESSION['panier'][$id]['photo'] = $photo;
         $_SESSION['panier'][$id]['titre'] = $titre;
         $_SESSION['panier'][$id]['prix'] = $prix;
-        $_SESSION['panier'][$id]['stock'] = $stock;
+        $_SESSION['panier'][$id]['stock'] = $prix;
     }
     else # Le produit est déjà en panier, j'ajoute la quantité à celle existante
     {
@@ -119,7 +119,7 @@ function nombreProduit()
 }
 
 // Nous créons une fonction pour retourner le prix total du panier
-function prixTotal() 
+function prixTotal($format) 
 {
     $total = 0;
     
@@ -131,5 +131,8 @@ function prixTotal()
         }
     }
     
+    if ($format == "HT")
+        $total *= 0.804;
+
     return $total;
 }

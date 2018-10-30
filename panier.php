@@ -124,6 +124,7 @@
                     <th scope="col">Quantité</th>
                     <th scope="col">Prix Total</th>
                     <th scope="col">Ajouter</th>
+                    <th scope="col">Retirer</th>
                     <th scope="col">Supprimer</th>
                 </tr>
             </thead>
@@ -158,22 +159,45 @@
                             <?php endif ?>
                         </td>
 
+                        <td>         
+                            <?php if ($value['quantite'] > 0) : ?>
+                                <form action="" method="post">
+                                    <input type="hidden" name="id_produit" value="<?= $key ?>">
+                                    <select class="form-control" name="quantite">
+                                        <option selected disabled>Quantité ...</option>
+                                        <?php for($i=1; $i <= $value['quantite'] ; $i++) : ?>
+                                            <option><?=-$i?></option>
+                                        <?php endfor; ?>
+                                    </select>
+                                    <input type="submit" class="btn btn-success btn-block" value="modif quantité" name="ajoutPanier">
+                                </form>
+                            <?php else : ?>
+                                La quantité est à 0, supprimer le produit ou ajouter une quantité
+                            <?php endif ?>
+                        </td>
+
                         <td><a href="?a=delete&id=<?=$key?>"><i class='fas fa-trash-alt'></i></a></td>
                     </tr>
                 </tbody>
             <?php endforeach; ?>
             <tr>
                 <th colspan="5">Montant total</th>
-                <td><?= number_format(prixTotal(), 2, ',', '.') # la fonction number_format() nous permet de retourner un montant formaté à notre convenance. Elle accepte 1 à 4 paramètres : le nombre visé + définition du nombre de décimales + le séparateur du point décimal + déparateur des milliers ?> €</td> 
+                <td><?= number_format(prixTotal("HT"), 2, ',', '.') # la fonction number_format() nous permet de retourner un montant formaté à notre convenance. Elle accepte 1 à 4 paramètres : le nombre visé + définition du nombre de décimales + le séparateur du point décimal + déparateur des milliers ?> € HT</td> 
+                <td><?= number_format(prixTotal("TTC"), 2, ',', '.') ?> € TTC</td> 
             </tr>
             <tr>
                 <td><a href="?a=truncate"><em>vider le panier</em></a></td>
             </tr>
         </table>
         <?php if(userConnect()) : ?>
-            <form action="" method="post">
-                <input type="submit" class="btn btn-primary" value="Valider le panier" name=valider>
-            </form>
+            <?php if ( empty($_SESSION['user']['ville']) || empty($_SESSION['user']['code_postal']) || empty($_SESSION['user']['adresse']) ) : ?>
+                <p>Veuillez compléter vos coordonnées dans votre profil. (adresse / ville / code postal)</p>
+                <a class="btn btn-success" href="inscription.php?id=<?= $_SESSION['user']['id_membre'] ?>">Modifier votre profil</a>
+            <?php else : ?>
+                <form action="" method="post">
+                    <input type="submit" class="btn btn-primary" value="Valider le panier" name=valider>
+                </form>
+            <?php endif; ?>
         <?php else : ?>
             <p>Vous n'êtes pas connecté.</p>
             <a class="btn btn-success" href="connexion.php">Se connecter</a>
