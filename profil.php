@@ -11,10 +11,6 @@
         header("location:connexion.php");
         exit(); // die() fonctionne aussi
     }
-    debug(time());  
-    debug($_GET);
-    debug($_POST);
-    debug($_FILES);
 
     if(isset($_GET['a']) && isset($_GET['id']) && $_GET['a'] == "delete" && is_numeric($_GET['id'])) # la fonction is_numeric() me permet de vérifier que le paramètre rentré est bien un chiffre
     {
@@ -100,8 +96,8 @@
             
             if(empty($msg))
             {
-                $result = $pdo->prepare("UPDATE produit SET photo=:photo WHERE id_produit = :id_produit");
-                $result->bindValue(":id_produit", $_SESSION['user']['id_membre'], PDO::PARAM_INT);
+                $result = $pdo->prepare("UPDATE membre SET photo=:photo WHERE id_membre = :id_membre");
+                $result->bindValue(":id_membre", $_SESSION['user']['id_membre'], PDO::PARAM_INT);
                 $result->bindValue(':photo', $nom_photo, PDO::PARAM_STR);
                 
                 if($result->execute()) # Si j'enregistre bien en BDD
@@ -143,7 +139,7 @@
                             <input type="file" class="form-control-file" id="photo" name="photo">
                         </div>
                         <!--<input type="submit" value="Valider" class="btn btn-info btn-lg btn-block">-->
-                        <button type="submit" class="btn btn-primary btn-lg btn-block">Valider</button>
+                        <button type="submit" class="btn btn-primary btn-lg btn-block" name="photoValid">Valider</button>
                     </form>
                 </div>
             </div>

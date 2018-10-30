@@ -80,7 +80,7 @@ function deleteModal($id, $titre, $reference, $element)
 }
 
 # Création d'une fonction pour créer et ajouter au panier
-function ajoutPanier($id, $quantite, $photo, $titre, $prix)
+function ajoutPanier($id, $quantite, $photo, $titre, $prix, $stock)
 {
     if(!isset($_SESSION['panier']))
     {
@@ -94,6 +94,7 @@ function ajoutPanier($id, $quantite, $photo, $titre, $prix)
         $_SESSION['panier'][$id]['photo'] = $photo;
         $_SESSION['panier'][$id]['titre'] = $titre;
         $_SESSION['panier'][$id]['prix'] = $prix;
+        $_SESSION['panier'][$id]['stock'] = $stock;
     }
     else # Le produit est déjà en panier, j'ajoute la quantité à celle existante
     {
