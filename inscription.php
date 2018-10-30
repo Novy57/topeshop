@@ -6,6 +6,7 @@
 
     require_once("inc/header.php");
 
+    // Validation du profil depuis le formulaire de la page :
     if($_POST)
     {
 
@@ -82,18 +83,32 @@
 
         if(empty($msg))
         {
-            // check si le pseudo est dispo
-            $result = $pdo->prepare("SELECT pseudo FROM membre WHERE pseudo = :pseudo");
-            $result->bindValue(':pseudo', $_POST['pseudo'], PDO::PARAM_STR);
-            $result->execute();
-
-            if($result->rowCount() == 1)
-            {
-                $msg .= "<div class='alert alert-danger'>Le pseudo $_POST[pseudo] est déjà pris, veuillez en choisir un autre.</div>";
+            // S'il ce n'est pas une modif de profil, ou si c'est une modif de profil avec changement de pseudo
+            if (empty($_POST['id_membre']) || ($_POST['pseudo'] != $_POST['pseudo_original'])){
+                // check si le pseudo est dispo
+                $result = $pdo->prepare("SELECT pseudo FROM membre WHERE pseudo = :pseudo");
+                $result->bindValue(':pseudo', $_POST['pseudo'], PDO::PARAM_STR);
+                $result->execute();
+                
+                if($result->rowCount() == 1)
+                {
+                    $msg .= "<div class='alert alert-danger'>Le pseudo $_POST[pseudo] est déjà pris, veuillez en choisir un autre.</div>";
+                }
             }
-            else 
+            
+            // Si pseudo dispo ou si modif profil sans changement pseudo
+            if(empty($msg)) 
             {
-                $result = $pdo->prepare("INSERT INTO membre (pseudo, mdp, nom, prenom, email, civilite, ville, code_postal, adresse, statut) VALUES (:pseudo, :mdp, :nom, :prenom, :email, :civilite, :ville, :code_postal, :adresse, 0)");
+
+                if(!empty($_POST['id_membre'])) # Je suis en train de modifier un profil
+                {
+                    $result = $pdo->prepare("UPDATE membre SET pseudo=:pseudo, mdp=:mdp, nom=:nom, prenom=:prenom, photo=:photo, email=:email, civilite=:civilite, ville=:ville, code_postal=:code_postal, adresse=:adresse WHERE id_membre = :id_membre");
+                    $result->bindValue(":id_membre", $_POST['id_membre'], PDO::PARAM_INT);
+                }
+                else # Je suis en train d'enregistrer pour la première fois un profil
+                {
+                    $result = $pdo->prepare("INSERT INTO membre (pseudo, mdp, nom, prenom, photo, email, civilite, ville, code_postal, adresse, statut) VALUES (:pseudo, :mdp, :nom, :prenom, :photo, :email, :civilite, :ville, :code_postal, :adresse, 0)");
+                }
 
                 $password_hash = password_hash($_POST['password'], PASSWORD_BCRYPT); 
                 # La fonction password_hash() va nous permettre de crypter sérieusement un mot de passe. Elle prend 2 arguments: le résultat ciblé + la méthode à utiliser
@@ -106,32 +121,82 @@
                 $result->bindValue(':civilite', $_POST['civilite'], PDO::PARAM_STR);
                 $result->bindValue(':ville', $_POST['ville'], PDO::PARAM_STR);
                 $result->bindValue(':adresse', $_POST['adresse'], PDO::PARAM_STR);
-                
                 $result->bindValue(':code_postal', $_POST['code_postal'], PDO::PARAM_INT);
+                $result->bindValue(':photo', "default.png", PDO::PARAM_STR);
 
                 if($result->execute())
                 {
                     // $msg .= "<div class='alert alert-success'>Vous êtes bien enregistré.</div>";
-
-                    header("location:connexion.php?m=success");
+                    if(!empty($_POST['id_membre'])) # Je viens de modifier un profil
+                    {   unset($_SESSION['user']);
+                        header("location:connexion.php?m=modified");
+                    }
+                    else # je viens d'enregistrer pour la première fois un profil
+                    {
+                        header("location:connexion.php?m=success");
+                    }
                 }
 
 
             }
         }
-
     }
 
-    # Je souhaite conserver les valeurs rentrées par l'utilisateur durant le processus de rechargement de la page
-    $pseudo = (isset($_POST['pseudo'])) ? $_POST['pseudo'] : '';
-    $prenom = (isset($_POST['prenom'])) ? $_POST['prenom'] : '';
-    $nom = (isset($_POST['nom'])) ? $_POST['nom'] : '';
-    $email = (isset($_POST['email'])) ? $_POST['email'] : '';
-    $adresse = (isset($_POST['adresse'])) ? $_POST['adresse'] : '';
-    $code_postal = (isset($_POST['code_postal'])) ? $_POST['code_postal'] : '';
-    $ville = (isset($_POST['ville'])) ? $_POST['ville'] : '';
-    $civilite = (isset($_POST['civilite'])) ? $_POST['civilite'] : '';
+    // Modification de profil suite à click bouton édition dans profil.php
+    if($_GET)
+    {
+        if(isset($_GET['id']) && !empty($_GET['id']) && is_numeric($_GET['id']))
+        {
+            $page = "Modification de mon profil";
 
+            $req = "SELECT * FROM membre WHERE id_membre = :id";
+
+            $result = $pdo->prepare($req);
+            $result->bindValue(':id', $_GET['id'], PDO::PARAM_INT);
+            $result->execute();
+
+            if($result->rowCount() == 1)
+            {
+                $modif_membre = $result->fetch();
+            }
+            else 
+            {
+                $msg .= "<div class='alert alert-danger'>Aucune correspondance en base de donnée.</div>";
+            }
+        }
+        else 
+        {
+            $msg .= "<div class='alert alert-danger'>Aucune correspondance en base de donnée.</div>";
+        } 
+    }
+
+    # Pour les modifications de profil demandées depuis  profil.php je prends les données de $modif_membre
+    if (isset($modif_membre)){
+        $pseudo = (isset($modif_membre['pseudo'])) ? $modif_membre['pseudo'] : '';
+        $prenom = (isset($modif_membre['prenom'])) ? $modif_membre['prenom'] : '';
+        $nom = (isset($modif_membre['nom'])) ? $modif_membre['nom'] : '';
+        $email = (isset($modif_membre['email'])) ? $modif_membre['email'] : '';
+        $adresse = (isset($modif_membre['adresse'])) ? $modif_membre['adresse'] : '';
+        $code_postal = (isset($modif_membre['code_postal'])) ? $modif_membre['code_postal'] : '';
+        $ville = (isset($modif_membre['ville'])) ? $modif_membre['ville'] : '';
+        $civilite = (isset($modif_membre['civilite'])) ? $modif_membre['civilite'] : '';
+    }
+    
+    # Si non je souhaite conserver les valeurs rentrées par l'utilisateur durant le processus de rechargement de la page
+    else{
+        $pseudo = (isset($_POST['pseudo'])) ? $_POST['pseudo'] : '';
+        $prenom = (isset($_POST['prenom'])) ? $_POST['prenom'] : '';
+        $nom = (isset($_POST['nom'])) ? $_POST['nom'] : '';
+        $email = (isset($_POST['email'])) ? $_POST['email'] : '';
+        $adresse = (isset($_POST['adresse'])) ? $_POST['adresse'] : '';
+        $code_postal = (isset($_POST['code_postal'])) ? $_POST['code_postal'] : '';
+        $ville = (isset($_POST['ville'])) ? $_POST['ville'] : '';
+        $civilite = (isset($_POST['civilite'])) ? $_POST['civilite'] : '';
+    }
+    
+    $id_membre = (isset($modif_membre)) ? $modif_membre['id_membre'] : "";
+    $pseudo_original = (isset($modif_membre)) ? $modif_membre['pseudo'] : "";
+    $action = (isset($modif_membre)) ? "Modifier" : "Inscription";
 ?>
 
     <div class="starter-template">
@@ -139,6 +204,8 @@
         <form action="" method="post">
             <small class="form-text text-muted">Vos données ne seront revendues à des services tiers.</small>
             <?= $msg ?>
+            <input type="hidden" name="id_membre" value="<?=$id_membre?>">
+            <input type="hidden" name="pseudo_original" value="<?=$pseudo_original?>">
             <div class="form-group">
                 <label for="pseudo">Pseudo</label>
                 <input type="text" class="form-control" id="pseudo" placeholder="Choisissez votre pseudo ..." name="pseudo" required value="<?= $pseudo ?>">
@@ -180,7 +247,7 @@
                 <label for="ville">Ville</label>
                 <input type="text" class="form-control" id="ville" placeholder="Quelle est votre ville ..." name="ville" value="<?= $ville ?>">
             </div>
-            <button type="submit" class="btn btn-primary btn-lg btn-block">Inscription</button>
+            <button type="submit" class="btn btn-primary btn-lg btn-block"><?= $action ?></button>
         </form>
     </div>
 

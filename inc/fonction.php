@@ -53,7 +53,35 @@ function userAdmin()
 }
 
 # Création d'une modal de suppression
-function deleteModal($id, $titre, $reference)
+
+function deleteModal($id, $titre, $reference, $element)
+  {
+    echo "<div class='modal fade' id='deleteModal" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
+        echo '<div class="modal-dialog" role="document">';
+            echo '<div class="modal-content">';
+                echo '<div class="modal-header">';
+                echo "<h5 class='modal-title' id='exampleModalLabel'>Suppression</h5>";
+                echo '<button type="button" class="close" data-dismiss="modal" aria-label="Close">';
+                echo '<span aria-hidden="true">&times;</span>';
+                echo '</button>';
+                echo '</div>';
+                echo '<div class="modal-body">';
+                echo "Êtes-vous sûr de vouloir supprimer le " . $element . " " . $titre;
+                if (!empty($reference))
+                    echo " (référence: " . $reference . " )";
+                echo " ?";
+                echo '</div>';
+                echo '<div class="modal-footer">';
+                echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
+                echo '<a href="?a=delete&id=' . $id . '" class="btn btn-danger">Supprimer</a>';
+                echo '</div>';
+            echo '</div>';
+        echo '</div>';
+    echo '</div>';
+}
+
+function deleteModalUser($id, $name, $contexte)
+
 {
     echo "<div class='modal fade' id='deleteModal" . $id . "' tabindex='-1' role='dialog' aria-labelledby='exampleModalLabel' aria-hidden='true'>";
         echo '<div class="modal-dialog" role="document">';
@@ -65,7 +93,7 @@ function deleteModal($id, $titre, $reference)
                 echo '</button>';
                 echo '</div>';
                 echo '<div class="modal-body">';
-                echo "Êtes-vous sûr de vouloir supprimer le produit " . $titre . " (référence: " . $reference . " ) ?";
+                echo "Êtes-vous sûr de vouloir supprimer " . $contexte . " " . $name . " ?";
                 echo '</div>';
                 echo '<div class="modal-footer">';
                 echo '<button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>';
@@ -77,7 +105,7 @@ function deleteModal($id, $titre, $reference)
 }
 
 # Création d'une fonction pour créer et ajouter au panier
-function ajoutPanier($id, $quantite, $photo, $titre, $prix)
+function ajoutPanier($id, $quantite, $photo, $titre, $prix, $stock)
 {
     if(!isset($_SESSION['panier']))
     {
@@ -91,6 +119,7 @@ function ajoutPanier($id, $quantite, $photo, $titre, $prix)
         $_SESSION['panier'][$id]['photo'] = $photo;
         $_SESSION['panier'][$id]['titre'] = $titre;
         $_SESSION['panier'][$id]['prix'] = $prix;
+        $_SESSION['panier'][$id]['stock'] = $prix;
     }
     else # Le produit est déjà en panier, j'ajoute la quantité à celle existante
     {
@@ -115,7 +144,7 @@ function nombreProduit()
 }
 
 // Nous créons une fonction pour retourner le prix total du panier
-function prixTotal() 
+function prixTotal($format) 
 {
     $total = 0;
     
@@ -127,5 +156,8 @@ function prixTotal()
         }
     }
     
+    if ($format == "HT")
+        $total *= 0.804;
+
     return $total;
 }
